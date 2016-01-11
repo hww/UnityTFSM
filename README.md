@@ -65,3 +65,16 @@ public class Elevator : TFsmEntity<ElevatorStates>
 }
 ```
 
+Now we can declarate the states.
+
+```
+public class Elevator : TFsmEntity<ElevatorStates>
+{
+  IEnumerator WaitingState()
+  {
+  }
+  IEnumerator MovingState()
+  {
+  }
+}
+```
