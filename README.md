@@ -90,6 +90,7 @@ IEnumerator WaitingState()
   onStateExit = () =>
   {
   };
+  
   // onEnter code block
   
   while (...)
@@ -100,5 +101,11 @@ IEnumerator WaitingState()
 }
 ```
 
+The state machine control methods
+
+Method | Descrition
+-------|-----------
+StartFSM(initialState, stateValue)|Start FSM with state _initialState_ and argument _stateValue_
+Go(
 
 
