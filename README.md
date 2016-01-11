@@ -16,6 +16,21 @@ In the body of this function we can request type of argument, cast it and use as
 
 This aproach requre custom dispatching by case switch, but it has ome benefits.
 
-### Spawning Unspawning
+### Spawning 
 
-Template - _class used for instantiating prefab._ When we create instance of prefab the instance receive message OnSpawned. The message contains refference to template which is located in the scene. The template modify the instance for some exact case. At same time the template can be used by more that one instantiated prefabs._
+Template - _class used for instantiating prefab._ When we create instance of prefab the instance receive message OnSpawned. The message contains refference to template which is located in the scene. The template modify the instance for some exact case. At same time the template can be used by more that one instantiated prefabs.
+
+Instance of the object can be placed to the scene by editor, and anyway initialized by template. In some cases the instance can be used without template.
+
+There are two methods for used by spawning system OnSpawned, OnDespawned. 
+
+```
+void OnSpawned(OnSpawnEvent evt)
+{
+}
+
+void OnDespawned()
+{
+}
+
+```
