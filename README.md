@@ -117,10 +117,14 @@ There is an example how start FSM and how to switch state
   public override void OnSpawned(object evt)
   {
     base.OnSpawned(evt);
+      StopAllCoroutines();
+      
       OnSpawnElevatorEvent e = evt as OnSpawnElevatorEvent;
       template = e.GetTemplate;               // now we can access to template
-      SetLevel(e.level);
-      StopAllCoroutines();
+      
+      // initialize character here
+      ...
+      
       StartFsm(ElevatorStates.WaitingState);  // start FSM here
   }
   IEnumerator MovingState()
