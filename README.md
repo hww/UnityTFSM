@@ -27,10 +27,41 @@ There are two methods for used by spawning system OnSpawned, OnDespawned.
 ```
 void OnSpawned(OnSpawnEvent evt)
 {
+  // Initialize the object. Start FSM if it needs
 }
 
 void OnDespawned()
 {
+  // Deinitialize the object
 }
+```
+
+After initialization every instance have the pointer to template. Can be used any method of spawning: 
+
+- GameObject.Instantiate
+- Custom Objects Pool
+- Or just initialization of object class for 3D object already existed in the scene.
+
+
+
+### FSM
+
+To make state machine we have to declarate enum with states of it.
 
 ```
+public enum ElevatorStates
+{
+    Undefined,
+    WaitingState,
+    MovingState
+}
+```
+
+Now can be declarated the behaviour.
+
+```
+public class Elevator : TFsmEntity<ElevatorStates>
+{
+}
+```
+
