@@ -105,7 +105,21 @@ The state machine control methods
 
 Method | Descrition
 -------|-----------
-StartFSM(initialState, stateValue)|Start FSM with state _initialState_ and argument _stateValue_
-Go(
+void StartFsm(STATES initialState, object theValue = null)|Start FSM with state _initialState_ and argument _theValue_
+object Go(STATES nextState, object theValue = null)|Start FSM with state _nextState_ and argument _theValue_
+object GoAndStop(STATES nextState, object theValue = null)|Go to the state _nextState_ with _theValue_ and stop FSM
+object InterruptAndGo(STATES nextState, object theValue = null)|Same as GO but print the text info about transition to log file
+object GoBack()|Return to previous state
+
+Inside state avalabe next fieds
+
+Type|Field|Description
+----|-----|-----------
+STATE|state|Curent state
+STATE|previousState|Previous state
+object|stateValue|State's value 
+float|stateStartAt|State starts at
+float|stateTime|Time since state stars
+
 
 
