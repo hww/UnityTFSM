@@ -78,3 +78,27 @@ public class Elevator : TFsmEntity<ElevatorStates>
   }
 }
 ```
+
+Every state body (up to first yield) is onEnter code block. In this block can be declarated onExit finalizer and onEvent handler.
+
+```
+IEnumerator WaitingState()
+{
+  onStateEvent = (BaseEvent evt) =>
+  {
+  };
+  onStateExit = () =>
+  {
+  };
+  // onEnter code block
+  
+  while (...)
+  {
+    // State arc
+    yield
+  }
+}
+```
+
+
+
