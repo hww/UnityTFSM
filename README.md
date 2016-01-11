@@ -111,7 +111,30 @@ Method | Descrition
 ```object InterruptAndGo(STATES nextState, object theValue = null)```|Same as GO but print the text info about transition to log file
 ```object GoBack()```|Return to previous state
 
-Inside state avalabe next fieds
+There is an example how start FSM and how to switch state
+
+```
+  public override void OnSpawned(object evt)
+  {
+    base.OnSpawned(evt);
+      OnSpawnElevatorEvent e = evt as OnSpawnElevatorEvent;
+      template = e.GetTemplate;               // now we can access to template
+      SetLevel(e.level);
+      StopAllCoroutines();
+      StartFsm(ElevatorStates.WaitingState);  // start FSM here
+  }
+  IEnumerator MovingState()
+  {
+    while (animTime < animDur)
+    {
+      // The state's arc code
+      yield return null;
+    }
+    Go(ElevatorStates.WaitingState);
+  }
+```
+
+Inside state avalabe the next fields
 
 Type|Field|Description
 ----|-----|-----------
