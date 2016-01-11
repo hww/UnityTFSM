@@ -129,11 +129,8 @@ There is an example how start FSM and how to switch state
   }
   IEnumerator MovingState()
   {
-    while (animTime < animDur)
-    {
-      // The state's arc code
+    while (stateTime < 1f) 
       yield return null;
-    }
     Go(ElevatorStates.WaitingState);
   }
 ```
