@@ -11,6 +11,9 @@ public class BaseEvent
     /// </summary>
     object sender;
 
+    /// <summary>
+    /// Create new event message this pointer to sender
+    /// </summary>
     public BaseEvent(object sender)
     {
         this.sender = sender;
