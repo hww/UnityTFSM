@@ -5,17 +5,12 @@ using System.Collections;
 /// Parent class can be MonoBehaviour, or your custom BaseMonoBehaviour
 /// </summary>
 /// <typeparam name="STATES"></typeparam>
-public class TFsmEntity<STATES> : BaseBehaviour {
+public class TFsmEntity<STATES> : BaseFSM {
 
-    /// <summary>The actual state</summary>
-    public STATES curentState_;
-    /// <summary>Previous state</summary>
-    public STATES previousState_;
-    /// <summary>Print to the log every state change </summary>
-    public bool logFsm = false;
-
-    #region State update events
-
+    /**
+     * State update events
+     */
+#if USE_STATE_UPDATE_DELEGATE
     /// <summary>
     /// The message can be send for every state change
     /// </summary>
@@ -29,7 +24,7 @@ public class TFsmEntity<STATES> : BaseBehaviour {
         {
             this.entity = ent;
             this.state = ent.state;
-            this.previousState = ent.previousState;
+            this.previousState = ent.prevState;
         }
     }
     /// <summary>Delegate for the state update event</summary>
@@ -39,58 +34,47 @@ public class TFsmEntity<STATES> : BaseBehaviour {
     /// <summary>Send every state change message to the delegate </summary>
     public bool sendEveryStateMessage = false;
 
-    #endregion
-
-    #region State's timer
-
-    /// <summary>
-    /// The state starts at.
-    /// </summary>
-    private float stateStartAt;
-    /// <summary>
-    /// Get time from this state start
-    /// </summary>
-    /// <value>The state Time.</value>
-    protected float stateTime {
-        get { return Time.time - stateStartAt; }
-    }
-
-    #endregion
-
-    /// <summary>
-    /// Gets the state.
-    /// </summary>
-    /// <value>The state.</value>
-    public STATES state { get { return curentState_; } }
-    /// <summary>
-    /// Gets the previous state.
-    /// </summary>
-    /// <value>The state of the previous.</value>
-    public STATES previousState { get { return previousState_; } }
-    /// <summary>
-    /// The on state exit will be executed.
-    /// </summary>
+#endif
+    /**
+     * FSM fields 
+     */
+    /// <summary>The actual state</summary>
+    public STATES state;
+    /// <summary>Previous state</summary>
+    public STATES prevState;
+    /// <summary>Print to the log every state change</summary>
+    public bool logFsm = false;
+    /// <summary>The on state exit will be executed</summary>
     protected System.Action onStateExit;
-
-    #region State's event handlers
-
-    /// <summary>Delegate for message receiver by state</summary>
-    public delegate void StateEventDelegate(BaseEvent evt);
-    /// <summary>The state onEvent block</summary>
-    protected StateEventDelegate onStateEvent;
-
-    #endregion
-
-    #region State's value
-
     /// <summary>
     /// The value transfered to the state. The method Go() can be used
     /// with or without additional argument (state value).
     /// </summary>
     protected object stateValue;
+    /// <summary>Any string to markup the FSM by TAG</summary>
+    protected string tagString;
+    /// <summary>Any string to markup the point inside any state</summary>
+    protected string substate;
+    
+    /**
+     * FSM timer
+     */
+    /// <summary>The state starts at</summary>
+    private float stateStartAt;
+    /// <summary>Get time from this state start</summary>
+    protected float stateTime { get { return Time.time - stateStartAt; } }
+    
+    /**
+     * FSM State's event handler
+     */
+    /// <summary>Delegate for message receiver by state</summary>
+    public delegate void StateEventDelegate(BaseEvent evt);
+    /// <summary>The state onEvent block</summary>
+    protected StateEventDelegate onStateEvent;
 
-    #endregion
-
+    /**
+     * FSM API Methods
+     */
     /// <summary>
     /// External termination of the state. Can be used in unelected cases
     /// This method is same as Go() but guaranty to print the text message to
@@ -101,7 +85,7 @@ public class TFsmEntity<STATES> : BaseBehaviour {
     /// <returns></returns>
     public object InterruptAndGo(STATES nextState, object theValue = null)
     {
-        Debug.LogFormat("FSM.InterruptAndGo from state: {0}", curentState_);
+        Debug.LogFormat("FSM.InterruptAndGo from state: {0}", state);
         return Go(nextState, theValue);
     }
     /// <summary>Go the specified nextState</summary>
@@ -112,22 +96,14 @@ public class TFsmEntity<STATES> : BaseBehaviour {
         StopAllCoroutines();
         if (onStateExit != null) onStateExit(); onStateExit = null;
         stateValue = theValue;
-        previousState_ = curentState_;
-        curentState_ = nextState;
+        prevState = state;
+        state = nextState;
+        substate = string.Empty;
         onStateEvent = null;
         if (logFsm)
-            Debug.LogFormat("FSM.Go: {0}", curentState_);
+            Debug.LogFormat("FSM.Go: {0}", state);
         stateStartAt = Time.time;
-        if (gameObject.activeSelf)
-        {
-            // Start coroutine of the state. This is most weak
-            // part of code because there is the string as the function's
-            // name used
-            StartCoroutine(curentState_.ToString());
-            // In case if you need FSM may send message every state change
-            if (sendEveryStateMessage && onStateUpdateListeners != null)
-                onStateUpdateListeners(new StateUpdateEvent(this));
-        }
+        AddFSM(this);
         return null;
     }
     /// <summary>Same as Go() but FSM stops after this method</summary>
@@ -139,14 +115,18 @@ public class TFsmEntity<STATES> : BaseBehaviour {
         StopAllCoroutines();
         if (onStateExit != null) onStateExit(); onStateExit = null;
         stateValue = theValue;
-        previousState_ = curentState_;
-        curentState_ = nextState;
+        prevState = state;
+        state = nextState;
+        substate = string.Empty;
         onStateEvent = null;
         if (logFsm)
-            Debug.LogFormat("FSM.GoAndStop: {0}", curentState_);
+            Debug.LogFormat("FSM.GoAndStop: {0}", state);
+#if USE_STATE_UPDATE_DELEGATE        
         // In case if you need FSM may send message every state change
         if (sendEveryStateMessage && onStateUpdateListeners != null)
             onStateUpdateListeners(new StateUpdateEvent (this));
+#endif
+        RemoveFSM(this);
         return null;
     }
     /// <summary>Go to previous state</summary>
@@ -154,19 +134,39 @@ public class TFsmEntity<STATES> : BaseBehaviour {
     public object GoBack()
     {
         if (logFsm)
-            Debug.LogFormat("FSM.GoBack: {0}", previousState);
-        return Go(previousState);
+            Debug.LogFormat("FSM.GoBack: {0}", prevState);
+        return Go(prevState);
     }
     /// <summary>Starts the FSM</summary>
     /// <param name="initialState">Initial State</param>
     protected void StartFsm(STATES initialState, object theValue = null) 
     {
-        curentState_ = initialState;
+        state = initialState;
         stateValue = theValue;
         onStateEvent = null;
         if (logFsm)
             Debug.LogFormat("FSM.StartFsm: {0}", state);
-        StartCoroutine(state.ToString());
+        AddFSM(this);
+    }
+    /// <summary>Start next state process</summary>
+    protected override void StartNextState()
+    {
+        if (gameObject.activeSelf)
+        {
+            // Start coroutine of the state. This is most weak 
+            // part of code because there is the string as the function's
+            // name used
+            StartCoroutine(state.ToString());
+            // In case if you need FSM may send message every state change
+#if USE_STATE_UPDATE_DELEGATE
+         if (sendEveryStateMessage && onStateUpdateListeners != null)
+             onStateUpdateListeners(new StateUpdateEvent(this));
+#endif            
+        }
+        else
+        {
+            Debug.LogErrorFormat("{0} GoInternal to state {1} but object is not activeSelf", tagString, state);
+        }
     }
     /// <summary>This method allow to send event to the current state</summary>
     /// <param name="evt">Event data</param>
@@ -176,8 +176,9 @@ public class TFsmEntity<STATES> : BaseBehaviour {
     }
     /// <summary>Return the state in user friendly format</summary>
     /// <returns>String value of the state</returns>
-    override public string ToString() {
-        return string.Format("{0}.{1}\n  state: '{2}' [{4}]\n  old: '{3}'\n", this.GetType().ToString(), name, state, previousState, stateTime.ToString("0.0"));
+    public override string ToString() {
+        return string.Format("{0}.{1}\n  state: '{2}:{3}' [{4}]\n  old: '{5}'\n", 
+            this.GetType().ToString(), tag, state, substate, stateTime.ToString("0.0"), prevState);
     }
 }
 
@@ -186,7 +187,7 @@ public class TFsmEntity<STATES> : BaseBehaviour {
 /// </summary>
 /// <typeparam name="STATES">Enum type with states of this object</typeparam>
 /// <typeparam name="TEMPLATE">Type of template of this object</typeparam>
-public class TFsmEntity<STATES,TEMPLATE> : TFsmEntity<STATES>, System.IDisposable where TEMPLATE : BaseTemplate
+public class TFsmEntity<STATES,TEMPLATE> : TFsmEntity<STATES> where TEMPLATE : BaseTemplate
 {
     /// <summary>
     /// Pointer to template of this object. The template has data to initialize
@@ -200,5 +201,65 @@ public class TFsmEntity<STATES,TEMPLATE> : TFsmEntity<STATES>, System.IDisposabl
     /// <param name="evt">OnSpawnEvent have the template pointer</param>
     public virtual void OnSpawned(object evt) {
         template = (evt as OnSpawnEvent).template as TEMPLATE;
+    }
+}
+
+/// <summary>
+/// Base Finite State Machine
+/// <summary>
+public class BaseFSM : BaseBehaviour
+{
+    // Linked list node
+    [HideInInspector]public BaseFSM prevFsm = null;
+    [HideInInspector]public BaseFSM nextFsm = null;
+    // List of FSMs requested Go to next state
+    private static BaseFSM first;
+    /// <summary>Add FSM to list</summary>    
+    protected static void AddFSM(BaseFSM fsm)
+    {
+        RemoveFSM(fsm);
+        if (first != null) {
+            fsm.nextFsm = first;
+            first.prevFsm = fsm;
+        }
+        first = fsm;
+    }
+    /// <summary>Remove FSM from list</summary>    
+    protected static void RemoveFSM (BaseFSM fsm)
+    {
+        if (first == fsm) {
+            first = fsm.nextFsm; // remove first
+        } else {
+            // not head of list
+            if (fsm.nextFsm != null) {
+                fsm.prevFsm.nextFsm = fsm.nextFsm;
+                fsm.nextFsm.prevFsm = fsm.prevFsm;
+            } else if (fsm.prevFsm != null) {
+                fsm.prevFsm.nextFsm = null;
+            }
+        }
+        fsm.prevFsm = null;
+        fsm.nextFsm = null;
+    }
+    /// <summary>
+    /// Start next state for all FSMs
+    /// Call it once per frame at the LateUpdate method.
+    /// </summary>
+    public static void StartAllNextStates()
+    {
+        if (first == null) return;
+        var fsm = first;
+        while (fsm != null)
+        {
+            var next = fsm.nextFsm;
+            RemoveFSM(fsm);
+            fsm.StartNextState();
+            fsm = next;
+        }
+    }
+    /// <summary>Start next state process</summary>
+    protected virtual void StartNextState()
+    {
+        Debug.LogError("Not overrided");
     }
 }

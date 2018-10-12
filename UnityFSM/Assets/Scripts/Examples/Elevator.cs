@@ -103,7 +103,7 @@ public class Elevator : TFsmEntity<ElevatorStates>
 
         Vector3 curentVelocity = Vector3.zero;
         Vector3 targetPosition = GetLevelPosition(curentLevel);
-
+        substate = "while: animTime < animDur";  //< Just to demonstrate substate feture
         while (animTime < animDur)
         {
             // ----------------------
@@ -161,10 +161,11 @@ public class Elevator : TFsmEntity<ElevatorStates>
     {
         base.OnSpawned(evt);
         OnSpawnElevatorEvent e = evt as OnSpawnElevatorEvent;
-        template = e.GetTemplate;               // now we can access to template
+        template = e.GetTemplate;                // now we can access to template
+        tagString = name;                        // designate tag of FSM 
         SetLevel(e.level);
         StopAllCoroutines();
-        StartFsm(ElevatorStates.WaitingState);  // start FSM here
+        StartFsm(ElevatorStates.WaitingState);   // start FSM here
     }
 
     // Before despawn object. Can be ommited. 
@@ -190,7 +191,8 @@ public class Elevator : TFsmEntity<ElevatorStates>
     /// </summary>
     void Update()
     {
-        Display.I.text = string.Format("Elevator:\n  state: {0}\n  stateTime: {1}\n  level: {2}\n  isMoving: {3}", state, stateTime.ToString("0.00"), curentLevel, isMoving);
+        Display.I.text = string.Format("Elevator:\n  state: {0}:{1}\n  stateTime: {2}\n  level: {3}\n  isMoving: {4}", 
+            state, substate, stateTime.ToString("0.00"), curentLevel, isMoving);
     }
 
     #endregion
