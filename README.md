@@ -2,6 +2,8 @@
 
 This is demo project of the simple Finate State Machine aproach used in my last project. This is not complete code but just some of important parts which I want to share.
 
+![FSM Diagram](fsm_diagram.jpg)
+
 ### Events
 
 Event - _is method call with message container as an argument._ All message containers based on same class BaseEvent. The function declaration loks like:
