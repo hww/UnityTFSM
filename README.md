@@ -25,9 +25,9 @@ public override void OnStateEvent(BaseEvent evt)
 {
     switch (...)
     {
-        // -- your event handlers
+        // your event handlers
     }
-    // -- in other case, to deliver event to curent state
+    // in other case, to deliver event to curent state
     base.OnStateEvent(evt);
 }
 ```
