@@ -18,6 +18,20 @@ In the body of this function we can request type of argument, cast it and use as
 
 This aproach requre custom dispatching by case switch, but it has ome benefits.
 
+To override the event method for FSM class, use next syntax:
+
+```
+public override void OnStateEvent(BaseEvent evt)
+{
+        switch (...)
+        {
+                // -- your event handlers
+        }
+        // -- in other case, to deliver event to curent state
+        base.OnStateEvent(evt);
+}
+```
+
 ### Spawning 
 
 Template - _class used for instantiating prefab._ When we create instance of prefab the instance receive message OnSpawned. The message contains refference to template which is located in the scene. The template modify the instance for some exact case. At same time the template can be used by more that one instantiated prefabs.
