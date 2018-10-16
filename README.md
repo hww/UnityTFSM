@@ -26,9 +26,11 @@ public override void OnStateEvent(BaseEvent evt)
     switch (...)
     {
         // your event handlers
+        default:
+            // in other case, to deliver event to curent state
+            base.OnStateEvent(evt);
+            break;
     }
-    // in other case, to deliver event to curent state
-    base.OnStateEvent(evt);
 }
 ```
 
