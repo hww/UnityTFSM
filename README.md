@@ -23,12 +23,12 @@ To override the event method for FSM class, use next syntax:
 ```
 public override void OnStateEvent(BaseEvent evt)
 {
-        switch (...)
-        {
-                // -- your event handlers
-        }
-        // -- in other case, to deliver event to curent state
-        base.OnStateEvent(evt);
+    switch (...)
+    {
+        // -- your event handlers
+    }
+    // -- in other case, to deliver event to curent state
+    base.OnStateEvent(evt);
 }
 ```
 
