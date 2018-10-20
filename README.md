@@ -8,7 +8,7 @@ This is demo project of the simple Finate State Machine aproach used in my last 
 
 Event - _is method call with message container as an argument._ All message containers based on same class BaseEvent. The function declaration loks like:
 
-```
+```c#
 void OnEvent(object evt)
 {
 }
@@ -20,7 +20,7 @@ This aproach requre custom dispatching by case switch, but it has ome benefits.
 
 To override the event method for FSM class, use next syntax:
 
-```
+```c#
 public override void OnStateEvent(BaseEvent evt)
 {
     switch (...)
@@ -42,7 +42,7 @@ Instance of the object can be placed to the scene by editor, and anyway initiali
 
 There are two methods for used by spawning system OnSpawned, OnDespawned. 
 
-```
+```c#
 void OnSpawned(OnSpawnEvent evt)
 {
   // Initialize the object. Start FSM if it needs
@@ -66,7 +66,7 @@ After initialization every instance have the pointer to template. Can be used an
 
 To make state machine we have to declarate enum with states of it.
 
-```
+```c#
 public enum ElevatorStates
 {
     Undefined,
@@ -85,7 +85,7 @@ public class Elevator : TFsmEntity<ElevatorStates>
 
 Now we can declarate the states.
 
-```
+```c#
 public class Elevator : TFsmEntity<ElevatorStates>
 {
   IEnumerator WaitingState()
@@ -99,7 +99,7 @@ public class Elevator : TFsmEntity<ElevatorStates>
 
 Every state body (up to first yield) is onEnter code block. In this block can be declarated onExit finalizer and onEvent handler.
 
-```
+```c#
 IEnumerator WaitingState()
 {
   onStateEvent = (BaseEvent evt) =>
@@ -123,15 +123,15 @@ The state machine control methods
 
 Method | Descrition
 -------|-----------
-```void StartFsm(STATES initialState, object theValue = null)```|Start FSM with state _initialState_ and argument _theValue_
-```object Go(STATES nextState, object theValue = null)```|Start FSM with state _nextState_ and argument _theValue_
-```object GoAndStop(STATES nextState, object theValue = null)```|Go to the state _nextState_ with _theValue_ and stop FSM
-```object InterruptAndGo(STATES nextState, object theValue = null)```|Same as GO but print the text info about transition to log file
-```object GoBack()```|Return to previous state
+void StartFsm(STATES initialState, object theValue = null)|Start FSM with state _initialState_ and argument _theValue_
+object Go(STATES nextState, object theValue = null)|Start FSM with state _nextState_ and argument _theValue_
+object GoAndStop(STATES nextState, object theValue = null)|Go to the state _nextState_ with _theValue_ and stop FSM
+object InterruptAndGo(STATES nextState, object theValue = null)|Same as GO but print the text info about transition to log file
+object GoBack()|Return to previous state
 
 There is an example how start FSM and how to switch state
 
-```
+```c#
   public override void OnSpawned(object evt)
   {
     base.OnSpawned(evt);
