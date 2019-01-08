@@ -111,7 +111,7 @@ Other state machine methods:
 
 Method | Descrition
 -------|-----------
-```c# void StartFsm(STATES initialState, object theValue = null)```|Start FSM with state _initialState_ and argument _theValue_
+void StartFsm(STATES initialState, object theValue = null)|Start FSM with state _initialState_ and argument _theValue_
 object Go(STATES nextState, object theValue = null)|Start FSM with state _nextState_ and argument _theValue_
 object GoAndStop(STATES nextState, object theValue = null)|Go to the state _nextState_ with _theValue_ and stop FSM
 object InterruptAndGo(STATES nextState, object theValue = null)|Same as GO but print the text info about transition to log file
