@@ -1,12 +1,12 @@
 # UnityTFSM
 
-This is demo project of the simple Finate State Machine aproach used in my last project. This is not complete code but just some of important parts which I want to share.
+The demo project of the Finite State Machine approach used in one of my projects. 
 
 ![FSM Diagram](fsm_diagram.jpg)
 
 ### Events
 
-Event - _is method call with message container as an argument._ All message containers based on same class BaseEvent. The function declaration loks like:
+Event handler - _is method data container as an argument._ All message containers based on same class BaseEvent. The event handler declaration looks like:
 
 ```c#
 void OnEvent(object evt)
@@ -14,11 +14,9 @@ void OnEvent(object evt)
 }
 ```
 
-In the body of this function we can request type of argument, cast it and use as the data source. The container can be used for storing result of the method as well.
+The data container can be used for reading input data and storing result of the method as well.
 
-This aproach requre custom dispatching by case switch, but it has ome benefits.
-
-To override the event method for FSM class, use next syntax:
+This approach requires custom dispatching by case switch. To override the event handler for FSM class, use next syntax:
 
 ```c#
 public override void OnStateEvent(BaseEvent evt)
@@ -27,7 +25,7 @@ public override void OnStateEvent(BaseEvent evt)
     {
         // your event handlers
         default:
-            // in other case, to deliver event to curent state
+            // in other case, to deliver event to current state
             base.OnStateEvent(evt);
             break;
     }
@@ -36,16 +34,15 @@ public override void OnStateEvent(BaseEvent evt)
 
 ### Spawning 
 
-Template - _class used for instantiating prefab._ When we create instance of prefab the instance receive message OnSpawned. The message contains refference to template which is located in the scene. The template modify the instance for some exact case. At same time the template can be used by more that one instantiated prefabs.
+Template - _class used for instantiating prefab process._ When new instance created the instance's _OnSpawned_ method invoked with message container witch refer to template. 
 
-Instance of the object can be placed to the scene by editor, and anyway initialized by template. In some cases the instance can be used without template.
-
-There are two methods for used by spawning system OnSpawned, OnDespawned. 
+There are two methods for used by spawning system _OnSpawned_ and _OnDespawned_. 
 
 ```c#
 void OnSpawned(OnSpawnEvent evt)
 {
   // Initialize the object. Start FSM if it needs
+  // Copy data from template to this instance
 }
 
 void OnDespawned()
@@ -54,17 +51,9 @@ void OnDespawned()
 }
 ```
 
-After initialization every instance have the pointer to template. Can be used any method of spawning: 
-
-- GameObject.Instantiate
-- Custom Objects Pool
-- Or just initialization of object class for 3D object already existed in the scene.
-
-
-
 ### FSM
 
-To make state machine we have to declarate enum with states of it.
+To implement a state machine, define new enum with required states.
 
 ```c#
 public enum ElevatorStates
@@ -75,7 +64,7 @@ public enum ElevatorStates
 }
 ```
 
-Now can be declarated the behaviour.
+Then implement the behavior.
 
 ```
 public class Elevator : TFsmEntity<ElevatorStates>
@@ -83,7 +72,7 @@ public class Elevator : TFsmEntity<ElevatorStates>
 }
 ```
 
-Now we can declarate the states.
+Add methods per each available state.
 
 ```c#
 public class Elevator : TFsmEntity<ElevatorStates>
@@ -97,7 +86,7 @@ public class Elevator : TFsmEntity<ElevatorStates>
 }
 ```
 
-Every state body (up to first yield) is onEnter code block. In this block can be declarated onExit finalizer and onEvent handler.
+Every state method's body, starts with onEnter code block. In this block contains definition for onExit and onEvent handler.
 
 ```c#
 IEnumerator WaitingState()
@@ -119,7 +108,7 @@ IEnumerator WaitingState()
 }
 ```
 
-The state machine control methods
+Other state machine methods:
 
 Method | Descrition
 -------|-----------
@@ -129,35 +118,43 @@ object GoAndStop(STATES nextState, object theValue = null)|Go to the state _next
 object InterruptAndGo(STATES nextState, object theValue = null)|Same as GO but print the text info about transition to log file
 object GoBack()|Return to previous state
 
-There is an example how start FSM and how to switch state
+Example starting new FSM and switching a state:
 
 ```c#
   public override void OnSpawned(object evt)
   {
-    base.OnSpawned(evt);
+      base.OnSpawned(evt);                    // initialize parent class
       StopAllCoroutines();
       
       OnSpawnElevatorEvent e = evt as OnSpawnElevatorEvent;
       template = e.GetTemplate;               // now we can access to template
-      
-      // initialize character here
+      // initialize this object here
+      this.foo = template.foo;
+      this.bar = template.bar;
       ...
-      
       StartFsm(ElevatorStates.WaitingState);  // start FSM here
   }
   IEnumerator MovingState()
   {
+    onStateEvent = (BaseEvent evt) =>
+    {
+      Debug.LogFormat("MovingState.onStateEvent({0})",evt);
+    };
+    onStateExit = () =>
+    {
+      Debug.LogFormat("MovingState.onStateExit()");
+    };
     while (stateTime < 1f) 
       yield return null;
-    Go(ElevatorStates.WaitingState);
+    Go(ElevatorStates.WaitingState);          // switch FSM state
   }
 ```
 
-Inside state avalabe the next fields
+Additionally the FSM has next fields:
 
 Type|Field|Description
 ----|-----|-----------
-STATE|state|Curent state
+STATE|state|Current state
 STATE|previousState|Previous state
 object|stateValue|State's value 
 float|stateStartAt|State starts at
@@ -165,4 +162,4 @@ float|stateTime|Time since state stars
 
 ## Conclusion
 
-In general the aproach works well with simple projects. :)
+In general the approach works well with simple projects. :)
