@@ -41,7 +41,11 @@ There are two methods for used by spawning system _OnSpawned_ and _OnDespawned_.
 void OnSpawned(OnSpawnEvent evt)
 {
   // Initialize the object. Start FSM if it needs
+  OnSpawnElevatorEvent e = evt as OnSpawnElevatorEvent;
+  template = e.GetTemplate;               // now we can access to template
   // Copy data from template to this instance
+  this.foo = template.foo;
+  this.bar = template.bar;
 }
 
 void OnDespawned()
