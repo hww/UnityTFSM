@@ -36,7 +36,7 @@ public class TFsmEntity<STATES> : BaseFSM {
 
 #endif
     /**
-     * FSM fields 
+     * FSM fields
      */
     /// <summary>The actual state</summary>
     public STATES state;
@@ -55,7 +55,7 @@ public class TFsmEntity<STATES> : BaseFSM {
     protected string tagString;
     /// <summary>Any string to markup the point inside any state</summary>
     protected string substate;
-    
+
     /**
      * FSM timer
      */
@@ -63,7 +63,7 @@ public class TFsmEntity<STATES> : BaseFSM {
     private float stateStartAt;
     /// <summary>Get time from this state start</summary>
     protected float stateTime { get { return Time.time - stateStartAt; } }
-    
+
     /**
      * FSM State's event handler
      */
@@ -91,7 +91,7 @@ public class TFsmEntity<STATES> : BaseFSM {
     /// <summary>Go the specified nextState</summary>
     /// <param name="nextState">The next state</param>
     /// <param name="theValue">State's argument</param>
-    public object Go(STATES nextState, object theValue = null) 
+    public object Go(STATES nextState, object theValue = null)
     {
         StopAllCoroutines();
         if (onStateExit != null) onStateExit(); onStateExit = null;
@@ -121,7 +121,7 @@ public class TFsmEntity<STATES> : BaseFSM {
         onStateEvent = null;
         if (logFsm)
             Debug.LogFormat("FSM.GoAndStop: {0}", state);
-#if USE_STATE_UPDATE_DELEGATE        
+#if USE_STATE_UPDATE_DELEGATE
         // In case if you need FSM may send message every state change
         if (sendEveryStateMessage && onStateUpdateListeners != null)
             onStateUpdateListeners(new StateUpdateEvent (this));
@@ -139,7 +139,7 @@ public class TFsmEntity<STATES> : BaseFSM {
     }
     /// <summary>Starts the FSM</summary>
     /// <param name="initialState">Initial State</param>
-    protected void StartFsm(STATES initialState, object theValue = null) 
+    protected void StartFsm(STATES initialState, object theValue = null)
     {
         state = initialState;
         stateValue = theValue;
@@ -153,7 +153,7 @@ public class TFsmEntity<STATES> : BaseFSM {
     {
         if (gameObject.activeSelf)
         {
-            // Start coroutine of the state. This is most weak 
+            // Start coroutine of the state. This is most weak
             // part of code because there is the string as the function's
             // name used
             StartCoroutine(state.ToString());
@@ -161,7 +161,7 @@ public class TFsmEntity<STATES> : BaseFSM {
 #if USE_STATE_UPDATE_DELEGATE
          if (sendEveryStateMessage && onStateUpdateListeners != null)
              onStateUpdateListeners(new StateUpdateEvent(this));
-#endif            
+#endif
         }
         else
         {
@@ -177,7 +177,7 @@ public class TFsmEntity<STATES> : BaseFSM {
     /// <summary>Return the state in user friendly format</summary>
     /// <returns>String value of the state</returns>
     public override string ToString() {
-        return string.Format("{0}.{1}\n  state: '{2}:{3}' [{4}]\n  old: '{5}'\n", 
+        return string.Format("{0}.{1}\n  state: '{2}:{3}' [{4}]\n  old: '{5}'\n",
             this.GetType().ToString(), tag, state, substate, stateTime.ToString("0.0"), prevState);
     }
 }
@@ -214,7 +214,7 @@ public class BaseFSM : BaseBehaviour
     [HideInInspector]public BaseFSM nextFsm = null;
     // List of FSMs requested Go to next state
     private static BaseFSM first;
-    /// <summary>Add FSM to list</summary>    
+    /// <summary>Add FSM to list</summary>
     protected static void AddFSM(BaseFSM fsm)
     {
         RemoveFSM(fsm);
@@ -224,7 +224,7 @@ public class BaseFSM : BaseBehaviour
         }
         first = fsm;
     }
-    /// <summary>Remove FSM from list</summary>    
+    /// <summary>Remove FSM from list</summary>
     protected static void RemoveFSM (BaseFSM fsm)
     {
         if (first == fsm) {
@@ -260,6 +260,6 @@ public class BaseFSM : BaseBehaviour
     /// <summary>Start next state process</summary>
     protected virtual void StartNextState()
     {
-        Debug.LogError("Not overrided");
+        Debug.LogError("StartNextState() Is not overridden");
     }
 }

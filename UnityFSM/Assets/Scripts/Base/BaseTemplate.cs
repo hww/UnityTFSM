@@ -23,7 +23,7 @@ public class BaseTemplate : BaseBehaviour {
     }
     /// <summary>
     /// Spawn the entity at default position
-    /// </summary>    
+    /// </summary>
     /// <param name="evt">On spawn entity message</param>
     /// <returns>New entity</returns>
     public GameObject Spawn(OnSpawnEvent evt)

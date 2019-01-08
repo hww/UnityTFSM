@@ -15,5 +15,4 @@ public class OnSpawnEvent : BaseEvent
     {
         template = temp;
     }
-
 }

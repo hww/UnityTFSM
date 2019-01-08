@@ -23,7 +23,7 @@ public class Elevator : TFsmEntity<ElevatorStates>
     protected ElevatorTemplate template;
 
     /// <summary>
-    /// Curent level of the elevator
+    /// Current level of the elevator
     /// </summary>
     protected int curentLevel;
 
@@ -68,7 +68,7 @@ public class Elevator : TFsmEntity<ElevatorStates>
 
         onStateExit = () =>
         {
-            isMoving = false; // Just to demonstrate onExit finalizer
+            isMoving = false; // Just to demonstrate onExit method
         };
 
         // ----------------------
@@ -103,7 +103,7 @@ public class Elevator : TFsmEntity<ElevatorStates>
 
         Vector3 curentVelocity = Vector3.zero;
         Vector3 targetPosition = GetLevelPosition(curentLevel);
-        substate = "while: animTime < animDur";  //< Just to demonstrate substate feture
+        substate = "while: animTime < animDur";  //< Just to demonstrate sub-state feature
         while (animTime < animDur)
         {
             // ----------------------
@@ -123,7 +123,7 @@ public class Elevator : TFsmEntity<ElevatorStates>
     #region UTILITIES
 
     /// <summary>
-    /// Limit elevator's level to a possible value. 
+    /// Limit elevator's level to a possible value.
     /// </summary>
     /// <param name="level"></param>
     /// <returns></returns>
@@ -133,7 +133,7 @@ public class Elevator : TFsmEntity<ElevatorStates>
     }
 
     /// <summary>
-    /// Calcaulate flore level
+    /// Calculate floor level
     /// </summary>
     /// <param name="level">Level number</param>
     /// <returns>Altitude</returns>
@@ -156,25 +156,25 @@ public class Elevator : TFsmEntity<ElevatorStates>
 
     #region EVENTS
 
-    // After spawn object. 
+    // After spawn object.
     public override void OnSpawned(object evt)
     {
         base.OnSpawned(evt);
         OnSpawnElevatorEvent e = evt as OnSpawnElevatorEvent;
         template = e.GetTemplate;                // now we can access to template
-        tagString = name;                        // designate tag of FSM 
+        tagString = name;                        // designate tag of FSM
         SetLevel(e.level);
         StopAllCoroutines();
         StartFsm(ElevatorStates.WaitingState);   // start FSM here
     }
 
-    // Before despawn object. Can be ommited. 
+    // Before despawn object. Can be committed.
     public override void OnDespawned()
     {
         Display.I.text = "Elevator despawned";
     }
 
-    // For demonstration only. Can be ommited.
+    // For demonstration only. Can be omitted.
     public override void OnStateEvent(BaseEvent evt)
     {
         // Before or after this function can be code executed for
@@ -191,7 +191,7 @@ public class Elevator : TFsmEntity<ElevatorStates>
     /// </summary>
     void Update()
     {
-        Display.I.text = string.Format("Elevator:\n  state: {0}:{1}\n  stateTime: {2}\n  level: {3}\n  isMoving: {4}", 
+        Display.I.text = string.Format("Elevator:\n  state: {0}:{1}\n  stateTime: {2}\n  level: {3}\n  isMoving: {4}",
             state, substate, stateTime.ToString("0.00"), curentLevel, isMoving);
     }
 

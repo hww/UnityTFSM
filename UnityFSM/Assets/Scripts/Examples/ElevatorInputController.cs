@@ -8,7 +8,7 @@ public class ElevatorInputController : MonoBehaviour {
 
     void Update()
     {
-        
+
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             // Up

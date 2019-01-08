@@ -4,8 +4,8 @@
 /// </summary>
 public class OnSpawnElevatorEvent : OnSpawnEvent {
 
-	// where to spawn the elevator
-	public int level;
+    // where to spawn the elevator
+    public int level;
 
     public OnSpawnElevatorEvent(ElevatorTemplate temp)
         : base(temp)

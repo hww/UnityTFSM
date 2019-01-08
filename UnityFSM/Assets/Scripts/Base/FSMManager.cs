@@ -6,6 +6,6 @@ public class FSMManager : MonoBehaviour
 {
     void LateUpdate()
     {
-        BaseFSM.StartAllNextStates();        
+        BaseFSM.StartAllNextStates();
     }
 }
