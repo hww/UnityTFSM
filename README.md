@@ -1,29 +1,28 @@
 # UnityTFSM
 
-The demo project of the Finite State Machine approach used in one of my projects. 
+The demo project of the Finite State Machine used in one of my projects. 
 
 ![FSM Diagram](fsm_diagram.jpg)
 
 ### Events
 
-Event handler - _is method data container as an argument._ All message containers based on same class BaseEvent. The event handler declaration looks like:
+Event handler - _is method with data container as an argument._ All message containers based on same class BaseEvent. The event handler declaration looks like:
 
 ```c#
-void OnEvent(object evt)
+void OnStateEvent(object evt)
 {
 }
 ```
 
-The data container can be used for reading input data and storing result of the method as well.
-
-This approach requires custom dispatching by case switch. To override the event handler for FSM class, use next syntax:
+The data container can be used for reading input data and storing result of the method as well. The approach requires custom dispatching by case switch statement, but sending message to behaviour will automaticly dispach it to current state. To override the event handler for FSM behaviour, use next syntax:
 
 ```c#
 public override void OnStateEvent(BaseEvent evt)
 {
     switch (...)
     {
-        // your event handlers
+        // your event handlers for this behaviour
+        ...
         default:
             // in other case, to deliver event to current state
             base.OnStateEvent(evt);
@@ -34,7 +33,7 @@ public override void OnStateEvent(BaseEvent evt)
 
 ### Spawning 
 
-Template - _class used for instantiating prefab process._ When new instance created the instance's _OnSpawned_ method invoked with message container witch refer to template. 
+Template - _class is data container used for spawning new game objects._ When new object created the object 's _OnSpawned_ method will be invoked with message container (wich refers to template). 
 
 There are two methods for used by spawning system _OnSpawned_ and _OnDespawned_. 
 
